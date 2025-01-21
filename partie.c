@@ -86,9 +86,9 @@ void afficherStatistiques(char *pseudo) {
     while (fscanf(fich, "%d %s %s %d %d\n", &partie.id, partie.joeur, partie.niveau, &partie.temps, &partie.progression) == 5) {
         if (strcmp(partie.joeur, pseudo) == 0) {
             formatTemps(partie.temps, &heures, &minutes, &secondes);
-            snprintf(temps, sizeof(temps), "%d h %d min %d s", heures, minutes, secondes);
+            snprintf(temps, sizeof(temps), "%d h %d m %d s", heures, minutes, secondes);
             snprintf(progression, sizeof(progression), "%d/81", partie.progression);
-            printf("\t| %-20d | %-20s | %-20s | %-20s |\n", partie.id, partie.niveau, temps, progression);
+            printf("\t| %-20d | %-20s | %-20s | %-20s|\n", partie.id, partie.niveau, temps, progression);
             found = 1;
         }
     }

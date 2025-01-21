@@ -1,0 +1,32 @@
+Projet Sudoku
+Bienvenue dans le projet Sudoku ! Ce fichier vous guidera sur la manière de compiler et d'exécuter le jeu.
+
+Prérequis
+Avant de commencer, assurez-vous que vous avez les outils suivants installés sur votre système :
+
+GCC : Compilateur GNU pour C. Vous pouvez vérifier s'il est installé avec la commande gcc --version.
+Un terminal : Pour exécuter les commandes.
+Étapes pour démarrer
+Compiler le projet
+Exécutez la commande suivante dans votre terminal depuis le dossier racine du projet :
+
+bash
+
+gcc -Wall -Wextra -g3 main.c sudoku.c partie.c admin.c -o output/main.exe
+Cette commande :
+
+
+bash
+
+
+cd output
+Lancer le jeu
+Exécutez l'exécutable généré :
+
+bash
+./main.exe
+Vous pouvez maintenant commencer à jouer !
+
+Remarques
+Le projet utilise le compilateur GCC pour la compilation. Si vous utilisez un autre compilateur, adaptez les commandes en conséquence.
+Le fichier exécutable généré peut varier selon votre système (par exemple, main.exe sous Windows, ou simplement main sous Linux/MacOS).

@@ -23,115 +23,9 @@
 #define RESET "\033[0m"
 
 
-
-
-
-void afficherGrille(Grid * grille) {
-    int i, j;
-    printf("\n\n\t\t\t\t                           JEU SUDOKU\n\n");
-    printf("\t\t\t\t    1     2     3         4     5     6         7     8     9   \n");
-    for(i = 0; i < 9; i++) {
-        printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n");
-        printf("\t\t\t\t%d|", i + 1);
-        for(j = 0; j < 9; j++) {
-            if(grille->cell[i][j].valeur != 0) {
-                if(grille->cell[i][j].estEditable == 1) printf("  %d  ", grille->cell[i][j].valeur);
-                if(grille->cell[i][j].estEditable == 0) printf("  %d* ", grille->cell[i][j].valeur);
-            } else printf("     ");
-            printf("|");
-            if(j == 2 || j == 5) printf("   |");
-        }
-        printf("\n");
-        if(i == 2 || i == 5) printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n\n");
-    }
-    printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n\n");
-}
-
-int verifierLigne(Grid * grille, int ligne) {
-    int j, k;
-    for(j = 0; j < 9; j++) {
-        if(grille->cell[ligne][j].valeur != 0) {
-            for(k = 0; k < 9; k++) {
-                if(grille->cell[ligne][j].valeur == grille->cell[ligne][k].valeur && k != j) return 0;
-            }
-        }
-    }
-    return 1;
-}
-
-int verifierColonne(Grid * grille, int colonne) {
-    int i, k;
-    for(i = 0; i < 9; i++) {
-        if(grille->cell[i][colonne].valeur != 0) {
-            for(k = 0; k < 9; k++) {
-                if(grille->cell[i][colonne].valeur == grille->cell[k][colonne].valeur && k != i) return 0;
-            }
-        }
-    }
-    return 1;
-}
-
-int verifierRegion(Grid * grille, int ligne, int colonne) {
-    int i, j, k, l;
-    ligne = (ligne / 3) * 3;
-    colonne = (colonne / 3) * 3;
-    for(i = ligne; i < ligne + 3; i++) {
-        for(j = colonne; j < colonne + 3; j++) {
-            if(grille->cell[i][j].valeur != 0) {
-                for(k = ligne; k < ligne + 3; k++) {
-                    for(l = colonne; l < colonne + 3; l++) {
-                        if(grille->cell[i][j].valeur == grille->cell[k][l].valeur && i != k && j != l) return 0;
-                    }
-                }
-            }
-        }
-    }
-    return 1;
-}
-
-int verifierGrille(Grid* grille) {
-    int i, j;
-    for(i = 0; i < 9; i++) {
-        if(!verifierLigne(grille, i)) return 0;
-    }
-    for(j = 0; j < 9; j++) {
-        if(!verifierColonne(grille, j)) return 0;
-    }
-    for(i = 0; i < 9; i += 3) {
-        for(j = 0; j < 9; j += 3) {
-            if(!verifierRegion(grille, i, j)) return 0;
-        }
-    }
-    return 1;
-}
-
-int enregistrerGrille(const char* filename, Grid* grille) {
-    FILE* fich = fopen(filename, "w");
-    if (fich == NULL) {
-        printf("Error: Could not open file %s for writing.\n", filename);
-        return 0;
-    }
-
-
-
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            fprintf(fich, "%d %d ", grille->cell[i][j].valeur, grille->cell[i][j].estEditable);
-
-            
-        }
-        fprintf(fich, "\n");
-    }
-    fclose(fich);
-
-    printf("Debug: Grid saved successfully to %s\n", filename);
-    return 1;
-}
-
-
-
-
-
+// Charger une grille de Sudoku depuis un fichier
+// filename : nom du fichier contenant les données de la grille
+// Retourne un pointeur vers la grille allouée dynamiquement ou NULL en cas d'erreur
 Grid * chargerGrille(char * filename) {
     int i, j;
     FILE * fich = fopen(filename, "r");
@@ -167,6 +61,134 @@ Grid * chargerGrille(char * filename) {
     printf("Debug: Grid data loaded successfully from %s\n", filename); 
     return grille;
 }
+
+// Vérifie si une ligne respecte les règles du Sudoku (pas de doublons)
+// grille : pointeur vers la grille à vérifier
+// ligne : indice de la ligne (0-8) à vérifier
+// Retourne 1 si la ligne est valide, 0 sinon
+int verifierLigne(Grid * grille, int ligne) {
+    int j, k;
+    for(j = 0; j < 9; j++) {
+        if(grille->cell[ligne][j].valeur != 0) {
+            for(k = 0; k < 9; k++) {
+                if(grille->cell[ligne][j].valeur == grille->cell[ligne][k].valeur && k != j) return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// Vérifie si une colonne respecte les règles du Sudoku (pas de doublons)
+// grille : pointeur vers la grille à vérifier
+// colonne : indice de la colonne (0-8) à vérifier
+// Retourne 1 si la colonne est valide, 0 sinon
+int verifierColonne(Grid * grille, int colonne) {
+    int i, k;
+    for(i = 0; i < 9; i++) {
+        if(grille->cell[i][colonne].valeur != 0) {
+            for(k = 0; k < 9; k++) {
+                if(grille->cell[i][colonne].valeur == grille->cell[k][colonne].valeur && k != i) return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// Vérifie si une région 3x3 respecte les règles du Sudoku (pas de doublons)
+// grille : pointeur vers la grille à vérifier
+// ligne : indice de la ligne de départ de la région (0-8)
+// colonne : indice de la colonne de départ de la région (0-8)
+// Retourne 1 si la région est valide, 0 sinon
+int verifierRegion(Grid * grille, int ligne, int colonne) {
+    int i, j, k, l;
+    ligne = (ligne / 3) * 3;
+    colonne = (colonne / 3) * 3;
+    for(i = ligne; i < ligne + 3; i++) {
+        for(j = colonne; j < colonne + 3; j++) {
+            if(grille->cell[i][j].valeur != 0) {
+                for(k = ligne; k < ligne + 3; k++) {
+                    for(l = colonne; l < colonne + 3; l++) {
+                        if(grille->cell[i][j].valeur == grille->cell[k][l].valeur && i != k && j != l) return 0;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+// Vérifie si toute la grille respecte les règles du Sudoku
+// grille : pointeur vers la grille à vérifier
+// Retourne 1 si toute la grille est valide, 0 sinon
+int verifierGrille(Grid* grille) {
+    int i, j;
+    for(i = 0; i < 9; i++) {
+        if(!verifierLigne(grille, i)) return 0;
+    }
+    for(j = 0; j < 9; j++) {
+        if(!verifierColonne(grille, j)) return 0;
+    }
+    for(i = 0; i < 9; i += 3) {
+        for(j = 0; j < 9; j += 3) {
+            if(!verifierRegion(grille, i, j)) return 0;
+        }
+    }
+    return 1;
+}
+
+
+
+
+
+
+void afficherGrille(Grid * grille) {
+    int i, j;
+    printf(ORANGE "\n\n\t\t\t\t                           JEU SUDOKU\n\n" RESET);
+    printf(ORANGE "\t\t\t\t    1     2     3         4     5     6         7     8     9   \n" RESET);
+    for(i = 0; i < 9; i++) {
+        printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n");
+        printf(ORANGE "\t\t\t\t%d|" RESET , i + 1);
+        for(j = 0; j < 9; j++) {
+            if(grille->cell[i][j].valeur != 0) {
+                if(grille->cell[i][j].estEditable == 1) printf("  %d  ", grille->cell[i][j].valeur);
+                if(grille->cell[i][j].estEditable == 0) printf("  %d* ", grille->cell[i][j].valeur);
+            } else printf("     ");
+            printf("|");
+            if(j == 2 || j == 5) printf("   |");
+        }
+        printf("\n");
+        if(i == 2 || i == 5) printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n\n");
+    }
+    printf("\t\t\t\t +-----+-----+-----+   +-----+-----+-----+   +-----+-----+-----+\n\n");
+}
+
+
+
+int enregistrerGrille(const char* filename, Grid* grille) {
+    FILE* fich = fopen(filename, "w");
+    if (fich == NULL) {
+        printf("Error: Could not open file %s for writing.\n", filename);
+        return 0;
+    }
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            fprintf(fich, "%d %d ", grille->cell[i][j].valeur, grille->cell[i][j].estEditable);
+
+        }
+        fprintf(fich, "\n");
+    }
+    fclose(fich);
+
+    printf("Debug: Grid saved successfully to %s\n", filename);
+    return 1;
+}
+
+
+
+
+
+
 
 
 
@@ -222,7 +244,7 @@ void initialisation(char * pseudo) {
         system("cls");
         afficherSudoku();
         printf("\n\n");
-        printf("\n\t\t\t\t\t Veuiller entrer votre pseudo > ");
+        printf(RED "\n\t\t\t      Veuiller entrer votre Nom (Doit pas depasser 15 caracteres) > " RESET);
         fflush(stdin);
         fgets(pseudo, sizeof(pseudo), stdin);
         if(!verifierPseudo(pseudo)) {
@@ -256,16 +278,15 @@ int choisirGrille(char *filename, char *niveau) {
     char c;
     int num;
 
-    // Display menu and select difficulty
     do {
         system("cls");
-        printf(RED"\n\n\t\t\t -------------------------------- JEU SUDOKU --------------------------------\n\n"RESET);
-        printf("\t\t\t\t - cliquez sur '1' pour un niveau Facile \n\n");
-        printf("\t\t\t\t - cliquez sur '2' pour un niveau Intermediaire \n\n");
-        printf("\t\t\t\t - cliquez sur '3' pour un niveau Difficile \n\n");
-        printf("\t\t\t\t - cliquez sur '4' pour retourner au menu principal \n\n");
-        printf("\n\t\t\t ----------------------------------------------------------------------------\n");
-        printf("\t\t\t Veuillez choisir le niveau du jeu : ");
+        printf(RED"\n\n\t\t\t -------------------- Niveaux de difficulte ---------------------\n\n"RESET);
+        printf("\t\t\t|\t - Entrez '1' pour un niveau Facile \t\t\t|\n\n");
+        printf("\t\t\t|\t - Entrez '2' pour un niveau Intermediaire \t\t|\n\n");
+        printf("\t\t\t|\t - Entrez '3' pour un niveau Difficile \t\t\t|\n\n");
+        printf("\t\t\t|\t - Entrez '4' pour retourner au menu principal \t\t|\n\n");
+        printf("\n\t\t\t ----------------------------------------------------------------\n");
+        printf("\t\t\t Veuillez choisir le niveau de difficulte du jeu : ");
         
         clearBuffer();
         c = getchar();
@@ -306,7 +327,6 @@ int choisirGrille(char *filename, char *niveau) {
 
         printf("Debug: Trying to load grid file: %s\n", filename); 
 
-        // Check if the file exists
         if (fileExists(filename)) {
             printf("Debug: File found: %s\n", filename); 
             return 1;
@@ -457,10 +477,10 @@ Grid * remplirGrille(Grid * grille, int * progression, int * duree, Partie *part
         progress = progressionJeu(grille);
         printf("\t\t\t\t progression %d/81 - (%.0f%%)   ", progress, (float)(progress * 100) / 81);
         calculerTemps(&debut, &temps);
-        printf("|   \t temps :: %.0f sec. (en calcul...)\n\n", temps);
+        printf("|   \t temps :: %.0f sec. \n\n", temps);
 
        
-        printf("\n\t --------- Options: (Entree) Continuer - (A) Aide - (S) Sauvegarder et Sortir ---------\n\t >");
+        printf(GREEN "\n\t --------- Options: (Entree) Pour entrer une valeur - (A) Help - (S) Sauvegarder et Sortir ---------\n\t >" RESET);
 
         
         clearBuffer();
@@ -707,16 +727,16 @@ void menuSudoku() {
     char c;
     do {
         fflush(stdin);
-        printf(YELLOW"\n\n\t\t\t --------------------------------------------------------------------------------------------\n"RESET);
-        printf(BLUE"\t\t\t Le nom de votre Joueur : %s" RESET, pseudo );
-        printf(YELLOW"\n\t\t\t ------------------------------------ MENU DU JEU SUDOKU ------------------------------------\n\n"RESET);
-        printf("\t\t\t\t - Appuyez sur .1. Commencer une nouvelle partie. \n\n");
-        printf("\t\t\t\t - Appuyez sur .2. Continuer votre derniere partie. \n\n");
-        printf("\t\t\t\t - Appuyez sur .3. Voirs les regles du SUDOKU.\n\n");
-        printf("\t\t\t\t - Appuyez sur .4. Consulter votres statistiques.\n\n");
-        printf("\t\t\t\t - Appuyez sur .5. Quitter. \n");
-        printf(YELLOW"\n\t\t\t ---------------------------------------------------------------------------------------------\n"RESET);
-        printf("\t\t\t Faites votre choix > ");
+        printf(YELLOW"\n\n\t\t\t ----------------------------------------------------------------------------------------\n"RESET);
+        printf(BLUE"\t\t\t| \t\t\t Bonjour %s, Bienvenue dans le jeu du SUDOKU.  \t\t|\n"RESET , pseudo);    
+        printf(YELLOW"\n\t\t\t ------------------------------------ MENU DU JEU  --------------------------------\n\n"RESET);
+        printf("\t\t\t|\t - Appuyez sur .1. Commencer une nouvelle partie. \t\t\t\t|\n\n");
+        printf("\t\t\t|\t - Appuyez sur .2. Continuer votre derniere partie\t\t\t\t|\n\n");
+        printf("\t\t\t|\t - Appuyez sur .3. Voirs les regles du SUDOKU.\t\t\t\t\t|\n\n");
+        printf("\t\t\t|\t - Appuyez sur .4. Consulter votres statistiques.\t\t\t\t|\n\n");
+        printf("\t\t\t|\t - Appuyez sur .5. Connectez comme Admin. \t\t\t\t\t|\n");
+        printf(YELLOW"\n\t\t\t -----------------------------------------------------------------------------------------\n"RESET);
+        printf("\t\t\t Entrez votre choix > ");
         scanf("%c", &c);
         system("cls");
         choix(c, pseudo);
@@ -741,7 +761,6 @@ Grid * remplirGrille2(Grid * grille, int * progression, int * duree, char *filen
     double temps = 0.0;
     int progress;
 
-    // Initialize the start time
     time(&debut);
 
     do {
@@ -752,18 +771,18 @@ Grid * remplirGrille2(Grid * grille, int * progression, int * duree, char *filen
         calculerTemps(&debut, &temps);
         printf("|   \t temps :: %.0f sec. (en calcul...)\n\n", temps);
 
-        printf("\n\t --------- Options: (Entree) Continuer - (A) Aide - (S) Sauvegarder et Sortir ---------\n\t >");
+        printf(GREEN "\n\t --------- Options: (Entree) Continuer - (A) Aide - (S) Sauvegarder et Sortir ---------\n\t >" RESET);
 
         clearBuffer();
         c = getchar();
 
         if (c == 'S' || c == 's') {
-            // Save the current state to the passed filename
+            
             printf("Enregistrement de la partie en cours...\n");
             enregistrerGrille(filename, grille);
             *progression = progressionJeu(grille);
             *duree = (int)temps;
-            return NULL; // Exit the game
+            return NULL; 
         } else if (c == 'A' || c == 'a') {
             int ligne, colonne;
             choisirCellule(grille, &ligne, &colonne);
@@ -777,7 +796,7 @@ Grid * remplirGrille2(Grid * grille, int * progression, int * duree, char *filen
             if (verifierGrille(grille)) {
                 printf("\n\n\t\t\t ------------- :) Félicitation vous avez complété cette partie! (: -------------\n\n");
                 getchar();
-                return grille; // Successfully completed the grid
+                return grille; 
             } else {
                 printf("\n\n\t\t\t ---------------- :( Grille incorrecte ): ----------------\n\n");
             }
@@ -808,4 +827,6 @@ int ajouterStatistiques(Partie *partie, char *filename) {
 
     fclose(fich);
     return 1;
+
 }
+

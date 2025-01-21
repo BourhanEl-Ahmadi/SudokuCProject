@@ -10,6 +10,78 @@
     #define MAKE_DIR(dir) mkdir(dir, 0777) 
 #endif
 
+
+Grid * creerGrille(){
+    Grid * grille = (Grid *)malloc(sizeof(Grid));
+    int i, j;
+
+    for(i = 0; i < 9; i++){
+        for(j = 0; j < 9; j++){
+            grille->cell[i][j].valeur = 0;
+            grille->cell[i][j].estEditable = 1;
+        }
+    }
+    return grille;
+}
+
+
+Grid* modifierGrille(Grid* grille) {
+    char lin, col, val;
+    int ligne, colonne, valeur;
+
+    while (1) {
+        system("cls");
+        afficherGrille(grille);  
+
+        
+        do {
+            printf("\t\t - Enter row number (1-9) or 'S' to stop: ");
+            lin = getchar();
+            clearBuffer();
+            if (lin == 'S' || lin == 's') {
+                goodbyeMessage();
+                return grille;
+            }
+        } while (lin < '1' || lin > '9');
+
+        ligne = lin - '0';
+
+        do {
+            printf("\t\t - Enter column number (1-9): ");
+            col = getchar();
+            clearBuffer();
+        } while (col < '1' || col > '9');
+
+        colonne = col - '0';
+
+        
+        do {
+            printf("\t\t - Enter value (0-9) for cell or '0' to clear: ");
+            val = getchar();
+            clearBuffer();
+        } while (val < '0' || val > '9');
+
+        valeur = val - '0';
+
+        int previousValue = grille->cell[ligne - 1][colonne - 1].valeur;
+        grille->cell[ligne - 1][colonne - 1].valeur = valeur;
+        
+        if (valeur != 0 && (!verifierLigne(grille, ligne - 1) || !verifierColonne(grille, colonne - 1) || !verifierRegion(grille, ligne - 1, colonne - 1))) {
+            printf("\n\t\t - ERROR: Value %d conflicts with existing values. Re-enter.\n", valeur);
+            grille->cell[ligne - 1][colonne - 1].valeur = previousValue;  
+            getchar();
+        } else {
+            grille->cell[ligne - 1][colonne - 1].estEditable = (valeur == 0) ? 1 : 0;  
+        }
+    }
+
+    return grille;
+}
+
+
+
+
+
 int chercherGrille(char *filename, int *type) {
     char c;
     int num;
@@ -91,18 +163,7 @@ void nombreGrilles(int niveau){
     }
 }
 
-Grid * creerGrille(){
-    Grid * grille = (Grid *)malloc(sizeof(Grid));
-    int i, j;
 
-    for(i = 0; i < 9; i++){
-        for(j = 0; j < 9; j++){
-            grille->cell[i][j].valeur = 0;
-            grille->cell[i][j].estEditable = 1;
-        }
-    }
-    return grille;
-}
 
 Grid * genererGrilleRemplie(){
     Grid * grille = (Grid *)malloc(sizeof(Grid));
@@ -117,59 +178,7 @@ Grid * genererGrilleRemplie(){
     return grille;
 }
 
-Grid* modifierGrille(Grid* grille) {
-    char lin, col, val;
-    int ligne, colonne, valeur;
 
-    while (1) {
-        system("cls");
-        afficherGrille(grille);  
-
-        
-        do {
-            printf("\t\t - Enter row number (1-9) or 'S' to stop: ");
-            lin = getchar();
-            clearBuffer();
-            if (lin == 'S' || lin == 's') {
-                goodbyeMessage();
-                return grille;
-            }
-        } while (lin < '1' || lin > '9');
-
-        ligne = lin - '0';
-
-        // Select column
-        do {
-            printf("\t\t - Enter column number (1-9): ");
-            col = getchar();
-            clearBuffer();
-        } while (col < '1' || col > '9');
-
-        colonne = col - '0';
-
-        
-        do {
-            printf("\t\t - Enter value (0-9) for cell or '0' to clear: ");
-            val = getchar();
-            clearBuffer();
-        } while (val < '0' || val > '9');
-
-        valeur = val - '0';
-
-        int previousValue = grille->cell[ligne - 1][colonne - 1].valeur;
-        grille->cell[ligne - 1][colonne - 1].valeur = valeur;
-        
-        if (valeur != 0 && (!verifierLigne(grille, ligne - 1) || !verifierColonne(grille, colonne - 1) || !verifierRegion(grille, ligne - 1, colonne - 1))) {
-            printf("\n\t\t - ERROR: Value %d conflicts with existing values. Re-enter.\n", valeur);
-            grille->cell[ligne - 1][colonne - 1].valeur = previousValue;  
-            getchar();
-        } else {
-            grille->cell[ligne - 1][colonne - 1].estEditable = (valeur == 0) ? 1 : 0;  
-        }
-    }
-
-    return grille;
-}
 
 
 void goodbyeMessage() {
