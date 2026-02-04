@@ -1,32 +1,43 @@
-Projet Sudoku
-Bienvenue dans le projet Sudoku ! Ce fichier vous guidera sur la manière de compiler et d'exécuter le jeu.
+🧩 Sudoku Game - C Edition
 
-Prérequis
-Avant de commencer, assurez-vous que vous avez les outils suivants installés sur votre système :
+Une implémentation robuste et interactive du célèbre jeu de réflexion Sudoku, développée entièrement en Langage C.
+Ce projet inclut une gestion de partie complète et un module d'administration.
 
-GCC : Compilateur GNU pour C. Vous pouvez vérifier s'il est installé avec la commande gcc --version.
-Un terminal : Pour exécuter les commandes.
-Étapes pour démarrer
-Compiler le projet
-Exécutez la commande suivante dans votre terminal depuis le dossier racine du projet :
+✨ Fonctionnalités
 
-bash
+🎮 Mode Joueur : Interface interactive pour remplir la grille.
 
-gcc -Wall -Wextra -g3 main.c sudoku.c partie.c admin.c -o output/main.exe
-Cette commande :
+🔐 Module Admin : Gestion avancée des grilles (ajout/modification).
+
+🚀 Performance : Code optimisé compilé avec GCC.
+
+🛠️ Gestion d'Erreurs : Vérification des entrées utilisateur et des règles du jeu.
 
 
-bash
+🛠️ Architecture du Projet
+Le projet est découpé en modules pour une meilleure maintenance :
+Fichier  ,  Description
+main.c   ,  Point d'entrée de l'application.
+sudoku.c ,  Logique métier et manipulation de la grille.
+partie.c ,  Gestion du déroulement d'une partie.
+admin.c  ,  Fonctions réservées au mode administrateur.
 
 
-cd output
-Lancer le jeu
-Exécutez l'exécutable généré :
+🚀 Installation et Lancement
 
-bash
-./main.exe
-Vous pouvez maintenant commencer à jouer !
+📋 Prérequis
+GCC (GNU Compiler Collection)
 
-Remarques
-Le projet utilise le compilateur GCC pour la compilation. Si vous utilisez un autre compilateur, adaptez les commandes en conséquence.
-Le fichier exécutable généré peut varier selon votre système (par exemple, main.exe sous Windows, ou simplement main sous Linux/MacOS).
+Un terminal (Bash, PowerShell, ou CMD)
+
+🔨 Compilation
+Ouvrez votre terminal dans le dossier racine et exécutez :
+"# Compilation avec flags de sécurité et de debug
+gcc -Wall -Wextra -g3 main.c sudoku.c partie.c admin.c -o output/main.exe"
+
+🎮 Démarrage
+Une fois la compilation terminée, lancez le jeu :
+"cd output
+./main.exe"
+
+
